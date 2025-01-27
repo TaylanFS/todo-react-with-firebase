@@ -1,16 +1,27 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./home.css";
+
+import { auth } from "../../firebaseConnection";
+import { signInWithEmailAndPassword } from "firebase/auth";
 
 export default function Home() {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 
+	const navigate = useNavigate();
+
 	async function handleLogin(event) {
 		event.preventDefault();
 
 		if (email !== "" && password !== "") {
-			alert("Teste");
+			await signInWithEmailAndPassword(auth, email, password)
+				.then(() => {
+					navigate("/admin", { replace: true });
+				})
+				.catch(() => {
+					console.log("Erro ao fazer login");
+				});
 		} else {
 			alert("Por favor, preencha todos os campos");
 		}
@@ -44,8 +55,7 @@ export default function Home() {
 			</form>
 
 			<Link className="button-link" to="/register">
-				{" "}
-				Não possui uma conta? Cadastre-se{" "}
+				Não possui uma conta? Cadastre-se
 			</Link>
 		</div>
 	);
