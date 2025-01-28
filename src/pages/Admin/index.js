@@ -1,16 +1,43 @@
 import "./admin.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
-import { auth } from "../../firebaseConnection";
+import { auth, db } from "../../firebaseConnection";
 import { signOut } from "firebase/auth";
+import { addDoc, collection } from "firebase/firestore";
 
 export default function Admin() {
 	const [tarefaInput, setTarefaInput] = useState("");
+	const [user, setUser] = useState({});
+
+	useEffect(() => {
+		async function loadTarefas() {
+			const userDetail = localStorage.getItem("@detailUser");
+			setUser(JSON.parse(userDetail));
+		}
+
+		loadTarefas();
+	}, []);
 
 	async function handleRegister(event) {
 		event.preventDefault();
 
-		alert("sldkjflskdfjlksdjf");
+		if (tarefaInput === "") {
+			alert("Por favor, digite sua tarefa!");
+			return;
+		}
+
+		await addDoc(collection(db, "tarefas"), {
+			tarefa: tarefaInput,
+			created: new Date(),
+			userUid: user?.uid,
+		})
+			.then(() => {
+				console.log("Tarefa adicionada com sucesso!");
+				setTarefaInput("");
+			})
+			.catch((error) => {
+				console.log("Erro ao registrar tarefa: " + error);
+			});
 	}
 
 	async function handleLogout() {
