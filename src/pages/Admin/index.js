@@ -70,8 +70,7 @@ export default function Admin() {
 			</article>
 
 			<button className="button-logout" onClick={handleLogout}>
-				{" "}
-				Sair{" "}
+				Sair
 			</button>
 		</div>
 	);
