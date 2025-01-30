@@ -10,6 +10,8 @@ import {
 	query,
 	orderBy,
 	where,
+	doc,
+	deleteDoc,
 } from "firebase/firestore";
 
 export default function Admin() {
@@ -43,7 +45,6 @@ export default function Admin() {
 					});
 
 					setTarefas(lista);
-					console.log(lista);
 				});
 			}
 		}
@@ -77,6 +78,11 @@ export default function Admin() {
 		await signOut(auth);
 	}
 
+	async function deleteTarefa(id) {
+		const docRef = doc(db, "tarefas", id);
+		await deleteDoc(docRef);
+	}
+
 	return (
 		<div className="admin-container">
 			<h1> Minhas tarefas </h1>
@@ -93,14 +99,22 @@ export default function Admin() {
 				</button>
 			</form>
 
-			<article className="list">
-				<p> Estudar React + Firebase </p>
+			{tarefas.map((item) => (
+				<article key={item.id} className="list">
+					<p> {item.tarefa} </p>
 
-				<div>
-					<button> Editar </button>
-					<button className="button-concluir"> Concluir </button>
-				</div>
-			</article>
+					<div>
+						<button> Editar </button>
+						<button
+							onClick={() => deleteTarefa(item.id)}
+							className="button-concluir"
+						>
+							{" "}
+							Concluir{" "}
+						</button>
+					</div>
+				</article>
+			))}
 
 			<button className="button-logout" onClick={handleLogout}>
 				Sair
